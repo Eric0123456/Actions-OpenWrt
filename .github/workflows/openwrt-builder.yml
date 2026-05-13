@@ -5,10 +5,9 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/openwrt/openwrt
-  REPO_BRANCH: main
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: master
   CONFIG_FILE: .config
-  DIY_P2_SH: diy-part2.sh
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
@@ -31,27 +30,27 @@ jobs:
         git config --global user.email "actions@github.com"
     - name: Clone source code
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH immortalwrt
     - name: Update feeds
       run: |
-        cd openwrt
+        cd immortalwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a
     - name: Customize config
       run: |
-        cp $CONFIG_FILE openwrt/.config
-        cd openwrt
+        cp $CONFIG_FILE immortalwrt/.config
+        cd immortalwrt
         make defconfig
     - name: Download packages
       run: |
-        cd openwrt
-        make download -j$(nproc) V=s 2>&1 | tail -20
+        cd immortalwrt
+        make download -j$(nproc) V=s 2>&1 | tail -10
     - name: Build firmware
       run: |
-        cd openwrt
-        make -j$(nproc) V=s 2>&1 | tail -30
+        cd immortalwrt
+        make -j$(nproc) V=s 2>&1 | tail -20
     - name: Upload firmware
       uses: actions/upload-artifact@main
       with:
-        name: OpenWrt-firmware
-        path: openwrt/bin/targets/*/*/
+        name: ImmortalWrt-firmware
+        path: immortalwrt/bin/targets/*/*/
