@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   CONFIG_FILE: .config
   UPLOAD_FIRMWARE: true
@@ -30,27 +30,27 @@ jobs:
         git config --global user.email "actions@github.com"
     - name: Clone source code
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH immortalwrt
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH lede
     - name: Update feeds
       run: |
-        cd immortalwrt
+        cd lede
         ./scripts/feeds update -a
         ./scripts/feeds install -a
     - name: Customize config
       run: |
-        cp $CONFIG_FILE immortalwrt/.config
-        cd immortalwrt
+        cp $CONFIG_FILE lede/.config
+        cd lede
         make defconfig
     - name: Download packages
       run: |
-        cd immortalwrt
+        cd lede
         make download -j$(nproc) V=s 2>&1 | tail -10
     - name: Build firmware
       run: |
-        cd immortalwrt
+        cd lede
         make -j$(nproc) V=s 2>&1 | tail -20
     - name: Upload firmware
       uses: actions/upload-artifact@main
       with:
-        name: ImmortalWrt-firmware
-        path: immortalwrt/bin/targets/*/*/
+        name: LEDE-firmware
+        path: lede/bin/targets/*/*/
